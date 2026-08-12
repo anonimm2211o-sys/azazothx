@@ -1,60 +1,116 @@
-import { list, put, del } from "@vercel/blob";
-import crypto from "crypto";
+const { get, set } = require("./_store");
+const crypto = require("crypto");
 
-const DATA = "azazothx/products.json";
-
-function auth(req) {
-  return req.headers["x-admin-key"] === process.env.ADMIN_KEY;
+function createToken() {
+  return crypto
+    .createHmac("sha256", process.env.ADMIN_SECRET)
+    .update("azazothx-admin")
+    .digest("hex");
 }
-async function readProducts() {
+
+function isAdmin(req) {
+  const auth = req.headers.authorization || "";
+  const token = auth.startsWith("Bearer ")
+    ? auth.slice(7)
+    : "";
+
+  return (
+    process.env.ADMIN_SECRET &&
+    token === createToken()
+  );
+}
+
+module.exports = async (req, res) => {
   try {
-    const r = await list({ prefix: DATA });
-    const f = r.blobs.find(x => x.pathname === DATA);
-    if (!f) return [];
-    return await (await fetch(f.url)).json();
-  } catch { return []; }
-}
-async function saveProducts(products) {
-  await put(DATA, JSON.stringify(products), { access: "public", addRandomSuffix: false, contentType: "application/json" });
-}
-export default async function handler(req, res) {
-  if (req.method === "GET") {
-    if (req.query.admin === "1" && !auth(req)) return res.status(401).json({error:"Unauthorized"});
-    return res.status(200).json(await readProducts());
-  }
-  if (!auth(req)) return res.status(401).json({error:"Unauthorized"});
-  const products = await readProducts();
+    let products = await get();
 
-  if (req.method === "DELETE") {
-    const id = String(req.query.id || "");
-    const next = products.filter(p => p.id !== id);
-    await saveProducts(next);
-    return res.status(200).json({ok:true});
-  }
-
-  if (req.method === "POST") {
-    const form = await req.formData();
-    const id = String(form.get("id") || crypto.randomUUID());
-    const existing = products.find(p => p.id === id);
-    let image = existing?.image || "";
-    const file = form.get("image");
-    if (file && typeof file !== "string" && file.size) {
-      const blob = await put(`azazothx/images/${crypto.randomUUID()}-${file.name}`, file, { access: "public" });
-      image = blob.url;
+    // PUBLIC — lihat katalog
+    if (req.method === "GET") {
+      return res.status(200).json(products);
     }
-    const product = {
-      id,
-      name: String(form.get("name") || ""),
-      category: String(form.get("category") || ""),
-      price: Number(form.get("price") || 0),
-      stock: Number(form.get("stock") || 0),
-      description: String(form.get("description") || ""),
-      specs: String(form.get("specs") || ""),
-      image
-    };
-    const next = existing ? products.map(p => p.id === id ? product : p) : [...products, product];
-    await saveProducts(next);
-    return res.status(200).json(product);
+
+    // ADMIN — semua perubahan wajib login
+    if (!isAdmin(req)) {
+      return res.status(401).json({
+        error: "Unauthorized"
+      });
+    }
+
+    // TAMBAH
+    if (req.method === "POST") {
+      const product = {
+        id: req.body.id || crypto.randomUUID(),
+        name: req.body.name || "Produk",
+        category: req.body.category || "",
+        price: Number(req.body.price || 0),
+        stock: Number(req.body.stock || 0),
+        image: req.body.image || "",
+        description: req.body.description || "",
+        sold: Boolean(req.body.sold)
+      };
+
+      products.push(product);
+
+      await set(products);
+
+      return res.status(201).json(product);
+    }
+
+    const id = req.query.id;
+
+    // EDIT
+    if (req.method === "PUT") {
+      const index = products.findIndex(
+        product => String(product.id) === String(id)
+      );
+
+      if (index === -1) {
+        return res.status(404).json({
+          error: "Produk tidak ditemukan"
+        });
+      }
+
+      products[index] = {
+        ...products[index],
+        ...req.body,
+        id: products[index].id
+      };
+
+      await set(products);
+
+      return res.status(200).json(products[index]);
+    }
+
+    // HAPUS
+    if (req.method === "DELETE") {
+      const before = products.length;
+
+      products = products.filter(
+        product => String(product.id) !== String(id)
+      );
+
+      if (products.length === before) {
+        return res.status(404).json({
+          error: "Produk tidak ditemukan"
+        });
+      }
+
+      await set(products);
+
+      return res.status(200).json({
+        success: true
+      });
+    }
+
+    return res.status(405).json({
+      error: "Method not allowed"
+    });
+
+  } catch (error) {
+    console.error(error);
+
+    return res.status(500).json({
+      error: "Internal server error"
+    });
   }
-  res.status(405).end();
-}
+};
