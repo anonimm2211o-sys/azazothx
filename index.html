@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AZAZOTHX HUB</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Rajdhani:wght@600;700&display=swap" rel="stylesheet">
+<style>
+body{font-family:Inter,sans-serif;background:#000}.display{font-family:Rajdhani,sans-serif}
+.glow{box-shadow:0 0 24px rgba(192,132,252,.22)}
+</style>
+</head>
+<body class="bg-black text-zinc-100 min-h-screen">
+<div class="fixed inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_50%_-10%,rgba(147,51,234,.18),transparent_55%)]"></div>
+
+<header class="sticky top-0 z-40 bg-black/75 backdrop-blur-md border-b border-violet-900/30">
+  <div class="max-w-6xl mx-auto px-5 h-16 flex items-center justify-between">
+    <a href="#" class="display font-bold text-xl">AZAZOTH<span class="text-fuchsia-400">X</span> HUB</a>
+    <nav class="hidden md:flex gap-7 text-sm text-zinc-400">
+      <a href="#produk" class="hover:text-white">Produk</a>
+      <a href="#cara-beli" class="hover:text-white">Cara Beli</a>
+      <a href="#kontak" class="hover:text-white">Kontak</a>
+    </nav>
+    <a href="/admin.html" class="text-xs text-zinc-500 hover:text-fuchsia-300">Admin</a>
+  </div>
+</header>
+
+<section class="relative border-b border-violet-900/30 overflow-hidden">
+  <div class="max-w-6xl mx-auto px-5 py-20 text-center relative">
+    <span class="inline-flex px-3 py-1 rounded-full border border-violet-700/50 bg-violet-950/40 text-xs text-violet-300 mb-6">STORE HUB</span>
+    <h1 class="display text-6xl sm:text-8xl font-bold leading-none">
+      <span class="bg-gradient-to-b from-fuchsia-300 via-fuchsia-500 to-violet-700 bg-clip-text text-transparent">AZAZOTHX</span><br>
+      <span>HUB</span>
+    </h1>
+    <p class="max-w-lg mx-auto mt-5 text-zinc-400 text-sm sm:text-base">Katalog game, akun, item, dan produk digital. Semua listing dikelola dari admin panel.</p>
+  </div>
+</section>
+
+<section id="produk" class="max-w-6xl mx-auto px-5 py-16">
+  <div class="flex flex-wrap items-end justify-between gap-4 mb-8">
+    <div>
+      <p class="text-xs uppercase tracking-widest text-violet-400 font-semibold">Katalog</p>
+      <h2 class="display text-3xl font-bold">Produk</h2>
+    </div>
+    <div id="categories" class="flex flex-wrap gap-2"></div>
+  </div>
+  <div id="grid" class="grid grid-cols-2 md:grid-cols-3 gap-4"></div>
+  <div id="empty" class="hidden text-center py-20 border border-dashed border-violet-900/40 rounded-2xl">
+    <p class="display text-2xl font-bold text-zinc-300">Katalog masih kosong</p>
+    <p class="text-sm text-zinc-600 mt-2">Tambahkan produk lewat Admin Panel.</p>
+  </div>
+</section>
+
+<section id="cara-beli" class="border-t border-violet-900/30 bg-zinc-950/50">
+  <div class="max-w-6xl mx-auto px-5 py-16">
+    <p class="text-xs uppercase tracking-widest text-violet-400 font-semibold text-center">Panduan</p>
+    <h2 class="display text-3xl font-bold text-center mb-10">Cara Beli</h2>
+    <div class="grid sm:grid-cols-3 gap-6">
+      <div class="rounded-xl border border-violet-900/40 bg-black/40 p-6"><b class="display text-lg">01 — Pilih</b><p class="text-sm text-zinc-500 mt-2">Pilih produk dan buka detail spesifikasinya.</p></div>
+      <div class="rounded-xl border border-violet-900/40 bg-black/40 p-6"><b class="display text-lg">02 — Order</b><p class="text-sm text-zinc-500 mt-2">Isi form order dan ikuti instruksi QRIS yang ditampilkan.</p></div>
+      <div class="rounded-xl border border-violet-900/40 bg-black/40 p-6"><b class="display text-lg">03 — Kirim Bukti</b><p class="text-sm text-zinc-500 mt-2">Upload bukti pembayaran. Order diteruskan ke bot Telegram admin.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="kontak" class="max-w-6xl mx-auto px-5 py-16">
+  <div class="rounded-2xl border border-violet-800/40 bg-gradient-to-br from-violet-950/40 to-black p-8 sm:p-12 text-center glow">
+    <h2 class="display text-3xl font-bold">AZAZOTHX HUB</h2>
+    <p class="text-zinc-500 text-sm mt-2">Creator: AZAZOTHX · Support: RZAA</p>
+  </div>
+</section>
+
+<footer class="border-t border-violet-900/30 py-8 text-center text-xs text-zinc-600">© 2026 AZAZOTHX HUB</footer>
+
+<div id="modal" class="hidden fixed inset-0 z-50 items-center justify-center p-4">
+  <div class="absolute inset-0 bg-black/85" onclick="closeModal()"></div>
+  <div class="relative w-full max-w-md rounded-2xl border border-violet-800/50 bg-zinc-950 overflow-hidden">
+    <div class="flex justify-between items-center p-5 border-b border-violet-900/40">
+      <h3 id="modalTitle" class="display text-xl font-bold"></h3><button onclick="closeModal()" class="text-zinc-500">✕</button>
+    </div>
+    <div class="p-5 space-y-4">
+      <img id="modalImg" class="w-full h-48 object-cover rounded-xl hidden">
+      <p id="modalDesc" class="text-sm text-zinc-400"></p>
+      <pre id="modalSpecs" class="whitespace-pre-wrap text-xs text-zinc-500 bg-black rounded-lg p-3"></pre>
+      <div class="flex justify-between"><span class="text-fuchsia-300 font-bold text-xl" id="modalPrice"></span><span id="modalStock" class="text-zinc-500"></span></div>
+      <form id="orderForm" class="space-y-3">
+        <input name="buyer" required placeholder="Nama / username" class="w-full rounded-lg bg-zinc-900 border border-violet-900/50 p-3 text-sm">
+        <input name="contact" required placeholder="Kontak Telegram/WhatsApp" class="w-full rounded-lg bg-zinc-900 border border-violet-900/50 p-3 text-sm">
+        <label class="block text-xs text-violet-300">Bukti pembayaran</label>
+        <input name="proof" required type="file" accept="image/*" class="w-full text-xs text-zinc-500">
+        <button class="w-full py-3 rounded-lg bg-gradient-to-r from-fuchsia-600 to-violet-600 font-bold">Kirim Order</button>
+        <p id="orderMsg" class="text-xs text-center"></p>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+let products=[], category='Semua', selected=null;
+const rupiah=n=>'Rp '+Number(n||0).toLocaleString('id-ID');
+async function load(){
+  const r=await fetch('/api/products'); products=await r.json(); render();
+}
+function render(){
+  const cats=['Semua',...new Set(products.map(x=>x.category).filter(Boolean))];
+  document.querySelector('#categories').innerHTML=cats.map(c=>`<button onclick="category='${c.replaceAll("'","&#39;")}';render()" class="px-3 py-1.5 rounded-lg text-xs ${category===c?'bg-violet-600 text-white':'bg-zinc-900 text-zinc-500'}">${c}</button>`).join('');
+  const list=category==='Semua'?products:products.filter(x=>x.category===category);
+  document.querySelector('#empty').classList.toggle('hidden',list.length!==0);
+  document.querySelector('#grid').innerHTML=list.map(p=>`
+    <button onclick="openProduct('${p.id}')" class="text-left rounded-xl border border-violet-900/40 bg-gradient-to-b from-zinc-900/80 to-black overflow-hidden hover:border-violet-500/60 transition">
+      ${p.image?`<img src="${p.image}" class="w-full h-32 object-cover">`:`<div class="h-32 bg-gradient-to-br from-fuchsia-600/40 to-violet-800/40"></div>`}
+      <div class="p-4"><p class="text-[10px] uppercase tracking-widest text-violet-400">${p.category||'Produk'}</p><h3 class="display text-lg font-bold mt-1">${p.name}</h3><div class="flex justify-between mt-3"><b class="text-fuchsia-300">${rupiah(p.price)}</b><span class="text-xs text-zinc-600">${p.stock>0?p.stock+' stok':'SOLD OUT'}</span></div></div>
+    </button>`).join('');
+}
+function openProduct(id){
+ selected=products.find(x=>x.id===id); if(!selected)return;
+ modalTitle.textContent=selected.name; modalPrice.textContent=rupiah(selected.price); modalStock.textContent=selected.stock>0?selected.stock+' stok':'SOLD OUT';
+ modalDesc.textContent=selected.description||'';
+ modalSpecs.textContent=selected.specs||'';
+ modalImg.src=selected.image||''; modalImg.classList.toggle('hidden',!selected.image);
+ orderForm.classList.toggle('hidden',selected.stock<=0); orderMsg.textContent='';
+ modal.classList.remove('hidden'); modal.classList.add('flex');
+}
+function closeModal(){modal.classList.add('hidden');modal.classList.remove('flex')}
+orderForm.addEventListener('submit',async e=>{
+ e.preventDefault(); if(!selected)return;
+ const fd=new FormData(e.target); fd.append('productId',selected.id);
+ orderMsg.textContent='Mengirim...';
+ try{const r=await fetch('/api/order',{method:'POST',body:fd});const j=await r.json();if(!r.ok)throw Error(j.error);orderMsg.textContent='Order terkirim ke admin Telegram.';e.target.reset()}catch(err){orderMsg.textContent=err.message||'Gagal mengirim order.'}
+});
+load();
+</script>
+</body>
+</html>

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="id"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Admin — AZAZOTHX HUB</title><script src="https://cdn.tailwindcss.com"></script></head>
+<body class="bg-black text-zinc-100 min-h-screen">
+<div class="max-w-6xl mx-auto px-5 py-8">
+<div class="flex justify-between items-center mb-8"><h1 class="text-2xl font-bold">AZAZOTHX HUB — Admin</h1><a href="/" class="text-sm text-violet-400">← Website</a></div>
+<div id="login" class="max-w-sm mx-auto rounded-2xl border border-violet-900/40 p-6"><h2 class="font-bold mb-4">Admin Login</h2><input id="key" type="password" placeholder="Admin key" class="w-full bg-zinc-900 border border-violet-900/50 rounded-lg p-3 mb-3"><button onclick="login()" class="w-full bg-violet-600 rounded-lg p-3 font-bold">Masuk</button><p id="loginMsg" class="text-xs text-rose-400 mt-2"></p></div>
+<div id="panel" class="hidden">
+<div class="grid lg:grid-cols-[1fr_1.5fr] gap-6">
+<form id="productForm" class="rounded-2xl border border-violet-900/40 p-6 space-y-3">
+<h2 class="font-bold text-lg">Tambah / Edit Produk</h2><input type="hidden" name="id">
+<input name="name" required placeholder="Nama produk" class="field"><input name="category" required placeholder="Kategori: MM2 / Roblox / Game Lain" class="field">
+<input name="price" required type="number" placeholder="Harga" class="field"><input name="stock" required type="number" placeholder="Stok" class="field">
+<textarea name="description" placeholder="Deskripsi" class="field h-24"></textarea><textarea name="specs" placeholder="Spesifikasi" class="field h-28"></textarea>
+<label class="text-xs text-zinc-500">Gambar produk</label><input name="image" type="file" accept="image/*" class="field">
+<div class="flex gap-2"><button class="flex-1 bg-violet-600 rounded-lg p-3 font-bold">Simpan</button><button type="button" onclick="resetForm()" class="px-4 bg-zinc-800 rounded-lg">Reset</button></div>
+<p id="formMsg" class="text-xs"></p>
+</form>
+<div><div class="flex justify-between mb-3"><h2 class="font-bold text-lg">Produk</h2><button onclick="loadProducts()" class="text-xs text-violet-400">Refresh</button></div><div id="list" class="space-y-3"></div></div>
+</div></div></div>
+<style>.field{width:100%;background:#18181b;border:1px solid #3b0764;border-radius:8px;padding:10px;font-size:14px;outline:none}</style>
+<script>
+let token='', products=[];
+async function login(){token=document.querySelector('#key').value;const r=await fetch('/api/products?admin=1',{headers:{'x-admin-key':token}});if(!r.ok){loginMsg.textContent='Key salah.';return}login.classList.add('hidden');panel.classList.remove('hidden');loadProducts()}
+async function loadProducts(){const r=await fetch('/api/products?admin=1',{headers:{'x-admin-key':token}});products=await r.json();list.innerHTML=products.map(p=>`<div class="rounded-xl border border-violet-900/40 p-4 flex gap-4"><div class="w-20 h-20 rounded-lg overflow-hidden bg-zinc-900 shrink-0">${p.image?`<img src="${p.image}" class="w-full h-full object-cover">`:''}</div><div class="min-w-0 flex-1"><b>${p.name}</b><p class="text-xs text-zinc-500">${p.category} · Rp ${Number(p.price).toLocaleString('id-ID')} · stok ${p.stock}</p><p class="text-xs text-zinc-600 truncate">${p.specs||''}</p></div><div class="flex flex-col gap-2"><button onclick="edit('${p.id}')" class="text-xs bg-zinc-800 px-3 py-2 rounded">Edit</button><button onclick="del('${p.id}')" class="text-xs bg-rose-950 text-rose-300 px-3 py-2 rounded">Hapus</button></div></div>`).join('')}
+function edit(id){const p=products.find(x=>x.id===id);for(const k of ['id','name','category','price','stock','description','specs'])productForm.elements[k].value=p[k]??'';scrollTo(0,0)}
+function resetForm(){productForm.reset();productForm.elements.id.value=''}
+async function del(id){if(!confirm('Hapus produk ini?'))return;const r=await fetch('/api/products?id='+encodeURIComponent(id),{method:'DELETE',headers:{'x-admin-key':token}});if(r.ok)loadProducts()}
+productForm.addEventListener('submit',async e=>{e.preventDefault();const fd=new FormData(e.target);const r=await fetch('/api/products',{method:'POST',headers:{'x-admin-key':token},body:fd});const j=await r.json();formMsg.textContent=r.ok?'Tersimpan.':j.error;if(r.ok){resetForm();loadProducts()}});
+</script></body></html>
